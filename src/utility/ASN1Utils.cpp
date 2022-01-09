@@ -18,6 +18,9 @@
 */
 
 #include "ASN1Utils.h"
+extern "C" {
+  #include "sha1.h"
+}
 
 int ASN1UtilsClass::versionLength()
 {
@@ -338,6 +341,26 @@ int ASN1UtilsClass::appendName(const String& name, int type, byte out[])
   return (nameLength + 11);
 }
 
+int ASN1UtilsClass::appendExtensionHeader(int length, byte out[])
+{
+  *out++ = ASN1_EXT;
+  if (length > 255) {
+    *out++ = 0x82;
+    *out++ = (length >> 8) & 0xff;
+  } else if (length > 127) {
+    *out++ = 0x81;
+  }
+  *out++ = (length) & 0xff;
+
+  if (length > 255) {
+    return 4;
+  } else if (length > 127) {
+    return 3;
+  } else {
+    return 2;
+  }
+}
+
 int ASN1UtilsClass::appendSequenceHeader(int length, byte out[])
 {
   *out++ = ASN1_SEQUENCE;
@@ -408,6 +431,65 @@ int ASN1UtilsClass::appendEcdsaWithSHA256(byte out[])
   *out++ = 0x02;
 
   return 12;
+}
+
+int ASN1UtilsClass::appendFidoU2fExtension(const byte publicKey[], byte out[])
+{
+  byte hash[20];
+  byte input[65];
+  input[0] = 0x04;
+  memmove(&input[1], publicKey, 64);
+
+  internal_SHA1((char*)hash, (const char*)input, sizeof(input));
+
+  *out++ = ASN1_SEQUENCE;
+  *out++ = 52; // 2 + 29(5 + 24) + 2 + 19(13 + 6) 
+
+  *out++ = ASN1_SEQUENCE;
+  *out++ = 29;
+
+  *out++ = ASN1_OBJECT_IDENTIFIER;
+  *out++ = 3;
+  *out++ = 0x55;
+  *out++ = 0x1d;
+  *out++ = 0x0e;
+
+  *out++ = ASN1_OCTET_STRING;
+  *out++ = 22;
+  *out++ = 04;
+  *out++ = 20;
+  memcpy(out, hash, sizeof(hash));
+  out += sizeof(hash);
+
+  *out++ = ASN1_SEQUENCE;
+  *out++ = 19;
+
+  *out++ = ASN1_OBJECT_IDENTIFIER;
+  *out++ = 11;
+  *out++ = 0x2b;
+  *out++ = 0x06;
+  *out++ = 0x01;
+  *out++ = 0x04;
+  *out++ = 0x01;
+  *out++ = 0x82;
+  *out++ = 0xe5;
+  *out++ = 0x1c;
+  *out++ = 0x02;
+  *out++ = 0x01;
+  *out++ = 0x01;
+
+  *out++ = ASN1_OCTET_STRING;
+  *out++ = 4;
+  *out++ = 0x03;
+  *out++ = 0x02;
+  *out++ = 0x06;
+  *out++ = 0x40;
+
+  return 2 + 52;
+}
+
+int ASN1UtilsClass::fidoU2fExtensionLength(void){
+  return 2 + 52;
 }
 
 ASN1UtilsClass ASN1Utils;

@@ -44,6 +44,24 @@ int ECCX08Class::begin(uint8_t i2cAddress)
   return begin();
 }
 
+int ECCX08Class::begin(uint8_t i2cAddress, int sda, int scl, uint32_t frequency)
+{
+  _address = i2cAddress;
+
+  _wire->begin(sda, scl, frequency);
+
+  wakeup();
+  idle();
+  
+  long ver = version() & 0x0F00000;
+
+  if (ver != 0x0500000 && ver != 0x0600000) {
+    return 0;
+  }
+
+  return 1;
+}
+
 int ECCX08Class::begin()
 {
   _wire->begin();
@@ -163,6 +181,37 @@ int ECCX08Class::random(byte data[], size_t length)
     length -= copyLength;
     data += copyLength;
   }
+
+  delay(1);
+
+  idle();
+
+  return 1;
+}
+
+int ECCX08Class::countUp(unsigned short index, unsigned long *p_counter)
+{
+  if (!wakeup()) {
+    return 0;
+  }
+
+  if (index > 1) {
+    return 0;
+  }
+
+  if (!sendCommand(0x24, 0x01, index)) {
+    return 0;
+  }
+
+  delay(23);
+
+  byte response[4];
+
+  if (!receiveResponse(response, sizeof(response))) {
+    return 0;
+  }
+
+  *p_counter = (response[3] << 24) | (response[2] << 16) | (response[1] << 8) | response[0];
 
   delay(1);
 
@@ -727,7 +776,8 @@ int ECCX08Class::receiveResponse(void* response, size_t length)
   size_t responseSize = length + 3; // 1 for length header, 2 for CRC
   byte responseBuffer[responseSize];
 
-  while (_wire->requestFrom((uint8_t)_address, (size_t)responseSize, (bool)true) != responseSize && retries--);
+//  while (_wire->requestFrom((uint8_t)_address, (size_t)responseSize, (bool)true) != responseSize && retries--);
+  while (_wire->requestFrom((uint8_t)_address, (uint8_t)responseSize, (uint8_t)true) != responseSize && retries--);
 
   responseBuffer[0] = _wire->read();
 

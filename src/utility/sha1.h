@@ -16,6 +16,7 @@ typedef struct
     unsigned char buffer[64];
 } SHA1_CTX;
 
+#if 0
 void SHA1Transform(
     uint32_t state[5],
     const unsigned char buffer[64]
@@ -39,8 +40,9 @@ void SHA1Final(
 #ifdef ARDUINO
 #define SHA1 SHA1_ // to make the function "internal"
 #endif
+#endif
 
-void SHA1(
+void internal_SHA1(
     char *hash_out,
     const char *str,
     int len);

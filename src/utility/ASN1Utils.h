@@ -24,11 +24,13 @@
 
 #define ASN1_INTEGER           0x02
 #define ASN1_BIT_STRING        0x03
+#define ASN1_OCTET_STRING      0x04
 #define ASN1_NULL              0x05
 #define ASN1_OBJECT_IDENTIFIER 0x06
 #define ASN1_PRINTABLE_STRING  0x13
 #define ASN1_SEQUENCE          0x30
 #define ASN1_SET               0x31
+#define ASN1_EXT               0xa3
 
 class ASN1UtilsClass {
 public:
@@ -72,6 +74,10 @@ public:
    int appendDate(int year, int month, int day, int hour, int minute, int second, byte out[]);
 
    int appendEcdsaWithSHA256(byte out[]);
+
+   int appendExtensionHeader(int length, byte out[]);
+   int appendFidoU2fExtension(const byte publicKey[], byte out[]);
+   int fidoU2fExtensionLength(void);
 };
 
 extern ASN1UtilsClass ASN1Utils;

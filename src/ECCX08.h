@@ -31,6 +31,7 @@ public:
 
   int begin();
   int begin(uint8_t i2cAddress);
+  int begin(uint8_t i2cAddress, int sda=-1, int scl=-1, uint32_t frequency=0);
   void end();
 
   int serialNumber(byte sn[]);
@@ -58,6 +59,8 @@ public:
   int writeConfiguration(const byte data[]);
   int readConfiguration(byte data[]);
   int lock();
+
+  int countUp(unsigned short index, unsigned long *p_counter);
 
 private:
   int wakeup();
