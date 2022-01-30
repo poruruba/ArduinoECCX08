@@ -443,10 +443,10 @@ int ASN1UtilsClass::appendFidoU2fExtension(const byte publicKey[], byte out[])
   internal_SHA1((char*)hash, (const char*)input, sizeof(input));
 
   *out++ = ASN1_SEQUENCE;
-  *out++ = 52; // 2 + 29(5 + 24) + 2 + 19(13 + 6) 
+  *out++ = 50; // 2 + 27(5 + 22) + 2 + 19(13 + 6) 
 
   *out++ = ASN1_SEQUENCE;
-  *out++ = 29;
+  *out++ = 27;
 
   *out++ = ASN1_OBJECT_IDENTIFIER;
   *out++ = 3;
@@ -455,8 +455,6 @@ int ASN1UtilsClass::appendFidoU2fExtension(const byte publicKey[], byte out[])
   *out++ = 0x0e;
 
   *out++ = ASN1_OCTET_STRING;
-  *out++ = 22;
-  *out++ = 04;
   *out++ = 20;
   memcpy(out, hash, sizeof(hash));
   out += sizeof(hash);
@@ -485,11 +483,11 @@ int ASN1UtilsClass::appendFidoU2fExtension(const byte publicKey[], byte out[])
   *out++ = 0x06;
   *out++ = 0x40;
 
-  return 2 + 52;
+  return 2 + 50;
 }
 
 int ASN1UtilsClass::fidoU2fExtensionLength(void){
-  return 2 + 52;
+  return 2 + 50;
 }
 
 ASN1UtilsClass ASN1Utils;

@@ -22,10 +22,10 @@
 
 #include <Arduino.h>
 
-class ECCX08CertClass {
+class ECCX08FidoCertClass {
 public:
-  ECCX08CertClass();
-  virtual ~ECCX08CertClass();
+  ECCX08FidoCertClass();
+  virtual ~ECCX08FidoCertClass();
 
   int beginStorage(int keySlot, int isserKeySlot);
   int endStorage(uint8_t **pp_der);
@@ -92,6 +92,6 @@ private:
   int _length;
 };
 
-extern ECCX08CertClass ECCX08Cert;
+extern ECCX08FidoCertClass ECCX08FidoCert;
 
 #endif

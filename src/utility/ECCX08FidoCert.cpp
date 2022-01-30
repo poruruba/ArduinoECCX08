@@ -25,7 +25,7 @@ extern "C" {
 #include "ASN1Utils.h"
 #include "PEMUtils.h"
 
-#include "ECCX08Cert.h"
+#include "ECCX08FidoCert.h"
 
 struct __attribute__((__packed__)) CompressedCert {
   uint8_t signature[64];
@@ -41,7 +41,7 @@ struct __attribute__((__packed__)) CompressedCert {
 
 static const uint8_t DEFAULT_SERIAL_NUMBER[] = { 0x01 };
 
-ECCX08CertClass::ECCX08CertClass() :
+ECCX08FidoCertClass::ECCX08FidoCertClass() :
   _serialNumber(DEFAULT_SERIAL_NUMBER),
   _serialNumberLength(sizeof(DEFAULT_SERIAL_NUMBER)),
   _bytes(NULL),
@@ -49,7 +49,7 @@ ECCX08CertClass::ECCX08CertClass() :
 {
 }
 
-ECCX08CertClass::~ECCX08CertClass()
+ECCX08FidoCertClass::~ECCX08FidoCertClass()
 {
   if (_bytes) {
     free(_bytes);
@@ -57,7 +57,7 @@ ECCX08CertClass::~ECCX08CertClass()
   }
 }
 
-int ECCX08CertClass::beginStorage(int keySlot, int issuerKeySlot)
+int ECCX08FidoCertClass::beginStorage(int keySlot, int issuerKeySlot)
 {
   if (keySlot < 0 || keySlot > 8) {
     return 0;
@@ -72,7 +72,7 @@ int ECCX08CertClass::beginStorage(int keySlot, int issuerKeySlot)
   return 1;
 }
 
-int ECCX08CertClass::endStorage(uint8_t **pp_der)
+int ECCX08FidoCertClass::endStorage(uint8_t **pp_der)
 {
   if (!buildCert(true)) {
     return -1;
@@ -83,7 +83,7 @@ int ECCX08CertClass::endStorage(uint8_t **pp_der)
   return _length;
 }
 
-int ECCX08CertClass::beginReconstruction(int keySlot, int issuerKeySlot)
+int ECCX08FidoCertClass::beginReconstruction(int keySlot, int issuerKeySlot)
 {
   if (keySlot < 0 || keySlot > 8) {
     return 0;
@@ -98,7 +98,7 @@ int ECCX08CertClass::beginReconstruction(int keySlot, int issuerKeySlot)
   return 1;
 }
 
-int ECCX08CertClass::endReconstruction()
+int ECCX08FidoCertClass::endReconstruction()
 {
   if (!buildCert(false)) {
     return 0;
@@ -107,17 +107,17 @@ int ECCX08CertClass::endReconstruction()
   return 1;
 }
 
-uint8_t* ECCX08CertClass::bytes()
+uint8_t* ECCX08FidoCertClass::bytes()
 {
   return _bytes;
 }
 
-int ECCX08CertClass::length()
+int ECCX08FidoCertClass::length()
 {
   return _length;
 }
 
-String ECCX08CertClass::sha1()
+String ECCX08FidoCertClass::sha1()
 {
   char result[20 + 1];
 
@@ -140,83 +140,83 @@ String ECCX08CertClass::sha1()
   return sha1Str;
 }
 
-void ECCX08CertClass::setIssueYear(int issueYear)
+void ECCX08FidoCertClass::setIssueYear(int issueYear)
 {
   struct CompressedCert* compressedCert = (struct CompressedCert*)_temp;
 
   compressedCert->dates.year = (issueYear - 2000);
 }
 
-void ECCX08CertClass::setIssueMonth(int issueMonth)
+void ECCX08FidoCertClass::setIssueMonth(int issueMonth)
 {
   struct CompressedCert* compressedCert = (struct CompressedCert*)_temp;
 
   compressedCert->dates.month = issueMonth;
 }
 
-void ECCX08CertClass::setIssueDay(int issueDay)
+void ECCX08FidoCertClass::setIssueDay(int issueDay)
 {
   struct CompressedCert* compressedCert = (struct CompressedCert*)_temp;
 
   compressedCert->dates.day = issueDay;
 }
 
-void ECCX08CertClass::setIssueHour(int issueHour)
+void ECCX08FidoCertClass::setIssueHour(int issueHour)
 {
   struct CompressedCert* compressedCert = (struct CompressedCert*)_temp;
 
   compressedCert->dates.hour = issueHour;
 }
 
-void ECCX08CertClass::setExpireYears(int expireYears)
+void ECCX08FidoCertClass::setExpireYears(int expireYears)
 {
   struct CompressedCert* compressedCert = (struct CompressedCert*)_temp;
 
   compressedCert->dates.expires = expireYears;
 }
 
-void ECCX08CertClass::setSerialNumber(const byte serialNumber[], int length)
+void ECCX08FidoCertClass::setSerialNumber(const byte serialNumber[], int length)
 {
   _serialNumber = serialNumber;
   _serialNumberLength = length;
 }
 
-void ECCX08CertClass::setCountryName(const char *countryName)
+void ECCX08FidoCertClass::setCountryName(const char *countryName)
 {
   _countryName = countryName;
 }
 
-void ECCX08CertClass::setStateProvinceName(const char* stateProvinceName)
+void ECCX08FidoCertClass::setStateProvinceName(const char* stateProvinceName)
 {
   _stateProvinceName = stateProvinceName;
 }
 
-void ECCX08CertClass::setLocalityName(const char* localityName)
+void ECCX08FidoCertClass::setLocalityName(const char* localityName)
 {
   _localityName = localityName;
 }
 
-void ECCX08CertClass::setOrganizationName(const char* organizationName)
+void ECCX08FidoCertClass::setOrganizationName(const char* organizationName)
 {
   _organizationName = organizationName;
 }
 
-void ECCX08CertClass::setOrganizationalUnitName(const char* organizationalUnitName)
+void ECCX08FidoCertClass::setOrganizationalUnitName(const char* organizationalUnitName)
 {
   _organizationalUnitName = organizationalUnitName;
 }
 
-void ECCX08CertClass::setCommonName(const char* commonName)
+void ECCX08FidoCertClass::setCommonName(const char* commonName)
 {
   _commonName = commonName;
 }
 
-void ECCX08CertClass::setIssuerName(const char* issuerName)
+void ECCX08FidoCertClass::setIssuerName(const char* issuerName)
 {
   _issuerName = issuerName;
 }
 
-int ECCX08CertClass::buildCert(bool buildSignature)
+int ECCX08FidoCertClass::buildCert(bool buildSignature)
 {
   uint8_t publicKey[64];
 
@@ -293,7 +293,7 @@ int ECCX08CertClass::buildCert(bool buildSignature)
   return 1;
 }
 
-int ECCX08CertClass::certInfoLength()
+int ECCX08FidoCertClass::certInfoLength()
 {
   struct CompressedCert* compressedCert = (struct CompressedCert*)_temp;
 
@@ -347,7 +347,7 @@ int ECCX08CertClass::certInfoLength()
   return certInfoLen;
 }
 
-void ECCX08CertClass::appendCertInfo(uint8_t publicKey[], uint8_t buffer[], int length)
+void ECCX08FidoCertClass::appendCertInfo(uint8_t publicKey[], uint8_t buffer[], int length)
 {
   struct CompressedCert* compressedCert = (struct CompressedCert*)_temp;
   uint8_t* out = buffer;
@@ -421,4 +421,4 @@ void ECCX08CertClass::appendCertInfo(uint8_t publicKey[], uint8_t buffer[], int 
   out += fidoU2fExtentionLen;
 }
 
-ECCX08CertClass ECCX08Cert;
+ECCX08FidoCertClass ECCX08Cert;
